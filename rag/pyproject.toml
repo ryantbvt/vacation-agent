@@ -12,7 +12,11 @@ dependencies = [
     "uvicorn (>=0.35.0,<0.36.0)",
     "httpx (>=0.28.1,<0.29.0)",
     "pyyaml (>=6.0.2,<7.0.0)",
-    "python-utils-traveler (==0.0.14)"
+    "python-utils-traveler (==0.0.14)",
+    "google-auth (>=2.40.3,<3.0.0)",
+    "google-auth-oauthlib (>=1.2.2,<2.0.0)",
+    "google-auth-httplib2 (>=0.2.0,<0.3.0)",
+    "google-api-python-client (>=2.175.0,<3.0.0)"
 ]
 
 

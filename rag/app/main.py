@@ -1,11 +1,16 @@
 from fastapi import FastAPI
 from python_utils.logging.logging import init_logger
 
-logger = init_logger(__name__)
+from app.api.v1.router import api_router
+
+# Initialize logger
+logger = init_logger()
+
+logger.info("Starting RAG Engine")
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    logger.info("Hello World")
-    return {"message": "Hello World"}
+# Connect routers to main application
+app.include_router(api_router, prefix="/v1")
+
+logger.info("RAG Engine started")

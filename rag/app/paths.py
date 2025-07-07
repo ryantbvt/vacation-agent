@@ -6,3 +6,6 @@ _ROOT_DIR = Path(os.path.abspath(__file__)).parent
 # Service config
 SERVICE_CONFIG_DIR = _ROOT_DIR / "configs/config.yaml"
 SERVICE_CONFIG_PATH = Path(os.environ.get("SERVICE_CONFIG_PATH", str(SERVICE_CONFIG_DIR)))
+
+# Google Credentials Path
+GOOGLE_CREDENTIALS_PATH = _ROOT_DIR / "credentials.json"
