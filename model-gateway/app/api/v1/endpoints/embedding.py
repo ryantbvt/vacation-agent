@@ -38,9 +38,11 @@ async def embeddings(request: EmbeddingRequest) -> EmbeddingResponse:
     openai_client = OpenAI(api_key=OPENAI_API_KEY)
 
     # Generate embeddings
+    logger.info(f"Generating embeddings. Embedding model: {request.model_name}")
     embedding_response = openai_client.embeddings.create(
         input=request.text,
         model=request.model_name
     )
 
+    logger.info(f"Successfully generated embeddings. Embedding model: {request.model_name}")
     return EmbeddingResponse(embedding=embedding_response.data[0].embedding)
