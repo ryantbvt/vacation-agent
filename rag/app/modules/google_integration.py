@@ -42,8 +42,6 @@ async def read_google_sheets() -> GoogleSheetResponse:
     Returns:
         spreadsheet_data (GoogleSheetResponse): Spreadsheet metadata
     '''
-    logger.info(f"Testing connection to Google Sheets: {SPREADSHEET_ID}")
-    
     try:
         # Get spreadsheet metadata
         sheet = google_sheets_service.spreadsheets()
