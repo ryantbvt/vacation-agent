@@ -3,8 +3,17 @@
 from typing import List, Dict
 from pydantic import BaseModel
 
+class RowMetadata(BaseModel):
+    sheet: str
+    row: int
+    columns: int
+
 class RowData(BaseModel):
-    pass
+    sheet_name: str
+    row_number: int
+    content: str
+    raw_data: List[str]
+    metadata: RowMetadata
 
 class GoogleSheetResponse(BaseModel):
     spreadsheet_title: str

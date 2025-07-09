@@ -7,7 +7,7 @@ from googleapiclient.discovery import build
 
 from app.paths import GOOGLE_CREDENTIALS_PATH, SERVICE_CONFIG_PATH
 from app.schemas.config import ServiceConfig
-from app.schemas.google_sheets import GoogleSheetResponse
+from app.schemas.google_sheets import GoogleSheetResponse, RowData, RowMetadata
 
 # Initialize logger
 logger = init_logger()
@@ -45,7 +45,6 @@ async def read_google_sheets() -> GoogleSheetResponse:
     logger.info(f"Testing connection to Google Sheets: {SPREADSHEET_ID}")
     
     try:
-        
         # Get spreadsheet metadata
         sheet = google_sheets_service.spreadsheets()
         metadata = sheet.get(spreadsheetId=SPREADSHEET_ID).execute()
@@ -75,17 +74,17 @@ async def read_google_sheets() -> GoogleSheetResponse:
             values = value_range.get('values', [])
             
             for row_index, row in enumerate(values):
-                row_data = {
-                    'sheet_name': sheet_name,
-                    'row_number': row_index + 1,
-                    'content': ' | '.join(str(cell) for cell in row),
-                    'raw_data': row,
-                    'metadata': {
-                        'sheet': sheet_name,
-                        'row': row_index + 1,
-                        'columns': len(row)
-                    }
-                }
+                row_data: RowData = RowData(
+                    sheet_name = sheet_name,
+                    row_number = row_index + 1,
+                    content = ' | '.join(str(cell) for cell in row),
+                    raw_data = row, 
+                    metadata = RowMetadata(
+                        sheet = sheet_name,
+                        row = row_index + 1,
+                        columns = len(row)
+                    )
+                )
                 all_row_data.append(row_data)
 
         logger.info(f"Successfully fetched {len(all_row_data)} rows from {len(sheet_names)} sheets")
@@ -93,7 +92,7 @@ async def read_google_sheets() -> GoogleSheetResponse:
         return GoogleSheetResponse(
             spreadsheet_title=title,
             spreadsheet_id=SPREADSHEET_ID,
-            sheets_data=all_row_data
+            sheet_data=all_row_data
         )
         
     except Exception as e:

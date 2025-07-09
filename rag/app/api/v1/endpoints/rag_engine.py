@@ -27,11 +27,12 @@ async def sync_data():
         TODO
     '''
     # Connect to Google Sheets
-    title = await read_google_sheets()
+    data = await read_google_sheets()
+    # logger.info(f"Data: {data}")
 
     # TODO: Vectorize / Embed the Google Sheets data
 
     # TODO: Sync data to Pinecone DB
 
 
-    return {"message": f"{title} doc is synced"}
+    return {"message": f"{data} doc is synced"}
