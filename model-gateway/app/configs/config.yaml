@@ -1,0 +1,28 @@
+slm_models:
+  roberta_sentiment: http://sentiment-model:4462
+
+llm_models:
+  llama3:
+    vendor: local
+    enabled: true
+  llama3.2:
+    vendor: local
+    enabled: true
+  gpt-3.5-turbo:
+    vendor: openai
+    enabled: true
+  gpt-4o-mini:
+    vendor: openai
+    enabled: true
+  claude-3-5-sonnet-20240620:
+    vendor: anthropic
+    enabled: true
+  claude-3-5-sonnet-20241022:
+    vendor: anthropic
+    enabled: true
+  claude-3-5-haiku-20241022:
+    vendor: anthropic
+    enabled: true
+  claude-3-7-sonnet-20250219:
+    vendor: anthropic
+    enabled: true

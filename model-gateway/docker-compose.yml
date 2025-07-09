@@ -1,0 +1,15 @@
+version: "0.0.1"
+services:
+  gateway:
+    image: model-gateway:latest
+    ports: 
+    - "4460:4460"
+    env_file:
+      - .env
+  sentiment-model:
+    image: sentiment-model:latest
+    ports:
+    - "4462:4462"
+    environment:
+      - HOME=/home/appgroup
+      - HF_HOME=/home/appgroup/.cache/huggingface
