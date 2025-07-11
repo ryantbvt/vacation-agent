@@ -22,3 +22,10 @@ class EmbeddingRequest(BaseModel):
 
 class EmbeddingResponse(BaseModel):
     embedding: List[float]
+
+class BatchEmbeddingRequest(BaseModel):
+    texts: List[str]
+    model_name: str
+
+class BatchEmbeddingResponse(BaseModel):
+    embeddings: List[List[float]]

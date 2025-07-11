@@ -2,5 +2,5 @@ google_sheets:
   sheet_id: "1vuQEMoNTcCjKE6Vz0E-mbMB1ZrIfTgSM07SN9c6jE8w"
 
 embedding:
-  model_gateway: "http://localhost:4460/v1/embedding/embeddings"
+  model_gateway: "http://localhost:4460/v1/embedding"
   model_name: "text-embedding-3-small"

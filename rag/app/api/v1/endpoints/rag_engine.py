@@ -40,18 +40,24 @@ async def sync_data():
     
     try:
         async with httpx.AsyncClient() as client:
-            for row in google_sheets_data.sheet_data:
-                embedding_request = {
-                    "text": row.content,
-                    "model_name": EMBEDDING_MODEL
-                }
+            # Extract all texts from Google Sheets data
+            texts = [row.content for row in google_sheets_data.sheet_data]
+            
+            # Make a single batch request instead of individual requests
+            batch_embedding_request = {
+                "texts": texts,
+                "model_name": EMBEDDING_MODEL
+            }
 
-                embedding_response = await client.post(
-                    url=EMBEDDING_GATEWAY,
-                    json=embedding_request
-                )
-                embedding_response.raise_for_status()
-                all_embedded_data.append(embedding_response.json())
+            embedding_response = await client.post(
+                url=f"{EMBEDDING_GATEWAY}/embeddings/batch",
+                json=batch_embedding_request
+            )
+            embedding_response.raise_for_status()
+            
+            # Get all embeddings from the batch response
+            batch_response = embedding_response.json()
+            all_embedded_data = batch_response["embeddings"]
     
     except Exception as e:
         logger.error(f"Error embedding data: {e}")
