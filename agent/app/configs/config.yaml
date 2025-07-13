@@ -1,1 +1,68 @@
-
+intent_skills:
+  kb_indicators:
+    - campsite
+    - reservation
+    - dinner plans
+    - itinerary
+    - packing list
+    - packing
+    - camping
+  realtime_indicators:
+    - weather
+    - traffic
+    - stock price
+    - now
+    - current
+    - right now
+    - today
+    - open
+    - close
+    - busy
+    - traffic
+  kb_patterns:
+    recommend: 1.5
+    best: 1.0
+    plan: 1.5
+    schedule: 1.5
+    book: 2.0
+    reserve: 2.0
+    camp: 2.0
+    trip: 1.0
+    vacation: 1.0
+    travel: 1.0
+  realtime_patterns:
+    now: 2.0
+    current: 1.5
+    right now: 2.0
+    today: 1.0
+    live: 2.0
+    real-time: 2.0
+    instant: 1.5
+    immediate: 1.5
+    urgent: 2.0
+    asap: 2.0
+    status: 1.0
+  question_words:
+    - what
+    - where
+    - when
+    - how
+    - why
+    - which
+  command_patterns:
+    - show
+    - display
+    - get
+    - fetch
+    - check
+    - tell me
+  thresholds:
+    kb_threshold: 1.0
+    realtime_threshold: 1.0
+  scoring_weights:
+    exact_match_bonus: 3
+    phrase_bonus: 2
+    question_bonus: 1
+    command_bonus: 1
+    short_query_bonus: 1
+    cross_penalty: 1

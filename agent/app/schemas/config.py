@@ -1,12 +1,14 @@
-from pydantic import BaseModel
 import yaml
-from pathlib import Path
+
+from pydantic import BaseModel
+
+from app.schemas.intent_config import IntentSkill
 
 class AgentConfig(BaseModel):
-    pass
+    intent_skills: IntentSkill
 
     @classmethod
-    def from_yaml(cls, config_path: Path):
-        with open(config_path, 'r') as f:
-            config_data = yaml.safe_load(f)
-        return cls(**config_data['agent']) 
+    def from_yaml(cls, file: str):
+        with open(file, 'r') as f:
+            config_dict = yaml.safe_load(f)
+        return cls.model_validate(config_dict)
