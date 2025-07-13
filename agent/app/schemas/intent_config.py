@@ -1,7 +1,7 @@
 ''' Intent Skill Schema '''
 
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Literal
 
 class Thresholds(BaseModel):
     kb_threshold: float
@@ -24,3 +24,9 @@ class IntentSkill(BaseModel):
     command_patterns: List[str]
     thresholds: Thresholds
     scoring_weights: ScoringWeights
+
+class IntentClassification(BaseModel):
+    intent: Literal["kb", "realtime", "general"]
+    kb_score: float
+    realtime_score: float
+    reasoning: str

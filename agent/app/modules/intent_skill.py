@@ -6,6 +6,7 @@ This module is responsible for determining the intent of a user's message.
 
 from python_utils.logging.logging import init_logger
 from app.schemas.config import AgentConfig
+from app.schemas.intent_config import IntentClassification
 
 from app.paths import SERVICE_CONFIG_PATH
 
@@ -28,7 +29,7 @@ class IntentSkill:
         self.thresholds = config.intent_skills.thresholds
         self.scoring_weights = config.intent_skills.scoring_weights
 
-    def classify_intent(self, user_query: str):
+    def classify_intent(self, user_query: str) -> IntentClassification:
         '''
         Description: Classify the intent of the user's query
 
@@ -36,7 +37,7 @@ class IntentSkill:
             user_query (str): The user's query
 
         Returns:
-            intent (str): The classified intent ("kb", "realtime", or "general")
+            IntentClassification: The classified intent with scores and reasoning
         '''
         logger.info(f"Classifying intent for query: '{user_query}'")
         
@@ -44,15 +45,23 @@ class IntentSkill:
         kb_score = self._score_kb_indicators(user_query)
         realtime_score = self._score_realtime_indicators(user_query)
         
-        # Step 2: Return winning intent
+        # Step 2: Determine winning intent
         intent = self._determine_winning_intent(kb_score, realtime_score)
+        
+        # Step 3: Create simple reasoning
+        reasoning = f"KB score: {kb_score:.2f}, Realtime score: {realtime_score:.2f}, Thresholds: KB={self.thresholds.kb_threshold}, Realtime={self.thresholds.realtime_threshold}"
         
         logger.info(f"Intent classification result: {intent} (KB: {kb_score}, Realtime: {realtime_score})")
         
-        return intent
+        return IntentClassification(
+            intent=intent,
+            kb_score=kb_score,
+            realtime_score=realtime_score,
+            reasoning=reasoning
+        )
         
 
-    def _score_kb_indicators(self, user_query: str) -> int:
+    def _score_kb_indicators(self, user_query: str) -> float:
         '''
         Description: Score the KB indicators. Indicators includes:
         - Camping
@@ -64,7 +73,7 @@ class IntentSkill:
             user_query (str): The user's query
 
         Returns:
-            kb_score (int): The score of the KB indicators
+            kb_score (float): The score of the KB indicators
         '''
         
         # convert query to lowercase
@@ -102,7 +111,7 @@ class IntentSkill:
         return kb_score     
         
 
-    def _score_realtime_indicators(self, user_query: str) -> int:
+    def _score_realtime_indicators(self, user_query: str) -> float:
         '''
         Description: Score the realtime indicators. Indicators includes:
         - Time Sensitivity
@@ -115,7 +124,7 @@ class IntentSkill:
             user_query (str): The user's query
 
         Returns:
-            realtime_score (int): The score of the realtime indicators
+            realtime_score (float): The score of the realtime indicators
         '''
         
         # convert query to lowercase
@@ -154,7 +163,7 @@ class IntentSkill:
 
         return realtime_score
 
-    def _determine_winning_intent(self, kb_score: int, realtime_score: int) -> str:
+    def _determine_winning_intent(self, kb_score: float, realtime_score: float) -> str:
         '''
         Description: Determine the winning intent based on the scores of the KB and realtime indicators.
         Winning intent can be KB, realtime, or general questions.
@@ -165,8 +174,8 @@ class IntentSkill:
         If general wins, we will route query to LLM with no web search.
 
         Args:
-            kb_score (int): The score of the KB indicators
-            realtime_score (int): The score of the realtime indicators
+            kb_score (float): The score of the KB indicators
+            realtime_score (float): The score of the realtime indicators
 
         Returns:
             winning_intent (str): The winning intent
@@ -196,3 +205,4 @@ class IntentSkill:
         
         # Rule 5: Fallback to general if neither meets threshold
         return "general"
+
