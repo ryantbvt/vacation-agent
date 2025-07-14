@@ -8,7 +8,8 @@ from app.schemas.rag_skill import RagSkillConfig
 class AgentConfig(BaseModel):
     intent_skills: IntentSkill
     rag_skill: RagSkillConfig
-    
+    model_gateway: str
+
     @classmethod
     def from_yaml(cls, file: str):
         with open(file, 'r') as f:

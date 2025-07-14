@@ -35,18 +35,26 @@ if OPENAI_API_KEY is None:
 
 async def inference_anthropic(
     model_name: str,
-    prompt: str,
+    user_prompt: str,
+    system_prompt: str,
     temperature: float,
-    max_tokens: int
+    max_tokens: int,
+    top_p: float = 1.0,
+    top_k: int = 40,
+    web_search: bool = False
 ) -> LLMResponse:
     '''
     Description: Inference handler for Anthropic models
 
     Args:
         model_name: the model we're sending the request to
-        prompt: the prompt we're sending to the LLM
+        user_prompt: the user prompt we're sending to the LLM
+        system_prompt: the system prompt for the LLM
         temperature: Variable for randomness, if 0, it'll return the least random answer
-        max_tokens: the max_token input for the LLM.
+        max_tokens: the max_token input for the LLM
+        top_p: nucleus sampling parameter
+        top_k: top-k sampling parameter
+        web_search: whether to enable web search functionality
 
     Returns:
         llm_response (LLMResponse): Output of the model
@@ -56,21 +64,44 @@ async def inference_anthropic(
 
     logger.info(f'Starting Anthropic Inference: {model_name}')
 
+    # Prepare messages with system prompt if provided
+    messages = []
+    if system_prompt:
+        messages.append({
+            'role': 'system',
+            'content': system_prompt
+        })
+    messages.append({
+        'role': 'user',
+        'content': [
+            {
+                'type': 'text',
+                'text': user_prompt
+            }
+        ]
+    })
+
+    # Prepare request parameters
+    request_params = {
+        'model': model_name,
+        'messages': messages,
+        'temperature': temperature,
+        'max_tokens': max_tokens,
+        'top_p': top_p,
+        'top_k': top_k
+    }
+
+    # Add web search tools if enabled
+    if web_search:
+        request_params['tools'] = [
+            {
+                'type': 'web_search'
+            }
+        ]
+        logger.info(f'Web search enabled for Anthropic model: {model_name}')
+
     # Send Anthropic Request
-    response_chat_completions = anthropic_client.messages.create(
-        model=model_name,
-        messages=[{
-            'role': 'user',
-            'content': [
-                {
-                    'type': 'text',
-                    'text': prompt
-                }
-            ]
-        }],
-        temperature=temperature,
-        max_tokens=max_tokens
-    )
+    response_chat_completions = anthropic_client.messages.create(**request_params)
 
     llm_response = LLMResponse(
         response=response_chat_completions.content[0].text
@@ -82,18 +113,24 @@ async def inference_anthropic(
 
 async def inference_openai(
     model_name: str,
-    prompt: str,
+    user_prompt: str,
+    system_prompt: str,
     temperature: float,
-    max_tokens: int
+    max_tokens: int,
+    top_p: float = 1.0,
+    top_k: int = 40
 ) -> LLMResponse:
     '''
     Description: Inference handler for OpenAI models
 
     Args:
         model_name: the model we're sending the request to
-        prompt: the prompt we're sending to the LLM
+        user_prompt: the user prompt we're sending to the LLM
+        system_prompt: the system prompt for the LLM
         temperature: Variable for randomness, if 0, it'll return the least random answer
-        max_tokens: the max_token input for the LLM.
+        max_tokens: the max_token input for the LLM
+        top_p: nucleus sampling parameter
+        top_k: top-k sampling parameter
 
     Returns:
         llm_response (LLMResponse): Output of the model
@@ -103,15 +140,25 @@ async def inference_openai(
     # Initialize openai client
     client = OpenAI(api_key=OPENAI_API_KEY)
 
+    # Prepare messages with system prompt if provided
+    messages = []
+    if system_prompt:
+        messages.append({
+            'role': 'system',
+            'content': system_prompt
+        })
+    messages.append({
+        'role': 'user',
+        'content': user_prompt
+    })
+
     # send request to openai
     response_chat_completions = client.chat.completions.create(
         model=model_name,
-        messages=[{
-            'role': 'user',
-            'content': prompt
-        }],
+        messages=messages,
         temperature=temperature,
-        max_tokens=max_tokens
+        max_tokens=max_tokens,
+        top_p=top_p
     )
 
     logger.info(f"Successfully recieved response from: {model_name}")
@@ -126,30 +173,43 @@ async def inference_openai(
 
 async def inference_ollama(
     model_name: str,
-    prompt: str,
+    user_prompt: str,
+    system_prompt: str,
     temperature: float,
-    max_tokens: int
+    max_tokens: int,
+    top_p: float = 1.0,
+    top_k: int = 40
 ) -> LLMResponse:
     '''
     Description: Inference handler for Ollama models
 
     Args:
         model_name: the model we're sending the request to
-        prompt: the prompt we're sending to the LLM
+        user_prompt: the user prompt we're sending to the LLM
+        system_prompt: the system prompt for the LLM
         temperature: Variable for randomness, if 0, it'll return the least random answer
-        max_tokens: the max_token input for the LLM.
+        max_tokens: the max_token input for the LLM
+        top_p: nucleus sampling parameter
+        top_k: top-k sampling parameter
 
     Returns:
         llm_response (LLMResponse): Output of the model
     '''
     logger.info(f'Starting Ollama Inference: {model_name}')
 
+    # Combine system and user prompts if system prompt is provided
+    full_prompt = user_prompt
+    if system_prompt:
+        full_prompt = f"{system_prompt}\n\n{user_prompt}"
+
     response = ollama.generate(
             model=model_name, 
-            prompt=prompt,
+            prompt=full_prompt,
             options = {
                 'temperature': temperature,
-                'max_tokens': max_tokens
+                'max_tokens': max_tokens,
+                'top_p': top_p,
+                'top_k': top_k
             }
         )
 

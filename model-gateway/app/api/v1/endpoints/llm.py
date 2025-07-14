@@ -39,9 +39,13 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
         if vendor == "anthropic":
             llm_response = await inference_anthropic(
                 model_name=request.model_name,
-                prompt=request.prompt,
+                user_prompt=request.user_prompt,
+                system_prompt=request.system_prompt,
                 temperature=request.temperature,
-                max_tokens=request.max_tokens
+                max_tokens=request.max_tokens,
+                top_p=request.top_p,
+                top_k=request.top_k,
+                web_search=request.web_search
             )
 
             return llm_response
@@ -49,9 +53,12 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
         if vendor == "openai":
             llm_response = await inference_openai(
                 model_name=request.model_name,
-                prompt=request.prompt,
+                user_prompt=request.user_prompt,
+                system_prompt=request.system_prompt,
                 temperature=request.temperature,
-                max_tokens=request.max_tokens
+                max_tokens=request.max_tokens,
+                top_p=request.top_p,
+                top_k=request.top_k
             )
 
             return llm_response
@@ -60,9 +67,12 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
         else:
             llm_response = await inference_ollama(
                 model_name=request.model_name,
-                prompt=request.prompt,
+                user_prompt=request.user_prompt,
+                system_prompt=request.system_prompt,
                 temperature=request.temperature,
-                max_tokens=request.max_tokens
+                max_tokens=request.max_tokens,
+                top_p=request.top_p,
+                top_k=request.top_k
             )
 
             return llm_response

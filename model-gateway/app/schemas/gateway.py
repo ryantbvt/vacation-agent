@@ -9,9 +9,13 @@ from typing import Optional, List
 
 class GatewayRequest(BaseModel):
     model_name: str
-    prompt: str
+    user_prompt: str
+    system_prompt: str
     temperature: Optional[float] = 0.0
     max_tokens: Optional[int] = 4096
+    top_p: Optional[float] = 1.0
+    top_k: Optional[int] = 40
+    web_search: Optional[bool] = False
 
 class LLMResponse(BaseModel):
     response: str

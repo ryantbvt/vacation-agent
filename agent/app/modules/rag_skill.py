@@ -7,7 +7,11 @@ from pinecone import Pinecone, ServerlessSpec
 from python_utils.logging.logging import init_logger
 
 from app.schemas.agent import ChatResponse
-from app.schemas.rag_skill import RagSkillConfig
+from app import agent_config
+
+# Initialize configs
+MODEL_GATEWAY = agent_config.model_gateway
+RAG_SKILL_CONFIG = agent_config.rag_skill
 
 # Initialize logger
 logger = init_logger()
@@ -82,7 +86,8 @@ class RAGSkill:
 
         # Step 2: Send to LLM
         llm_request = {
-            "model": config.rag_skill.model,
+            "model": RAG_SKILL_CONFIG.model,
+            "prompt": "text"
         }
 
         return response
