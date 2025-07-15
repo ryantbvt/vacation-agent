@@ -118,7 +118,8 @@ async def inference_openai(
     temperature: float,
     max_tokens: int,
     top_p: float = 1.0,
-    top_k: int = 40
+    top_k: int = 40,
+    web_search: bool = False
 ) -> LLMResponse:
     '''
     Description: Inference handler for OpenAI models
@@ -131,6 +132,7 @@ async def inference_openai(
         max_tokens: the max_token input for the LLM
         top_p: nucleus sampling parameter
         top_k: top-k sampling parameter
+        web_search: whether to enable web search functionality
 
     Returns:
         llm_response (LLMResponse): Output of the model
@@ -152,14 +154,26 @@ async def inference_openai(
         'content': user_prompt
     })
 
+    # Prepare request parameters
+    request_params = {
+        'model': model_name,
+        'messages': messages,
+        'temperature': temperature,
+        'max_tokens': max_tokens,
+        'top_p': top_p,
+        'top_k': top_k
+    }
+
+    if web_search:
+        request_params['tools'] = [
+            {
+                'type': 'web_search'
+            }
+        ]
+        logger.info(f'Web search enabled for OpenAI model: {model_name}')
+
     # send request to openai
-    response_chat_completions = client.chat.completions.create(
-        model=model_name,
-        messages=messages,
-        temperature=temperature,
-        max_tokens=max_tokens,
-        top_p=top_p
-    )
+    response_chat_completions = client.chat.completions.create(**request_params)
 
     logger.info(f"Successfully recieved response from: {model_name}")
 
