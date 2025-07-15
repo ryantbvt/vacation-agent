@@ -58,7 +58,8 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
                 temperature=request.temperature,
                 max_tokens=request.max_tokens,
                 top_p=request.top_p,
-                top_k=request.top_k
+                top_k=request.top_k,
+                web_search=request.web_search
             )
 
             return llm_response
