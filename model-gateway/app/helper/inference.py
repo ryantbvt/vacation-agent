@@ -64,14 +64,8 @@ async def inference_anthropic(
 
     logger.info(f'Starting Anthropic Inference: {model_name}')
 
-    # Prepare messages with system prompt if provided
-    messages = []
-    if system_prompt:
-        messages.append({
-            'role': 'system',
-            'content': system_prompt
-        })
-    messages.append({
+    # Prepare messages (no system message in the array)
+    messages = [{
         'role': 'user',
         'content': [
             {
@@ -79,11 +73,14 @@ async def inference_anthropic(
                 'text': user_prompt
             }
         ]
-    })
+    }]
+
+    logger.info(f'Messages: {messages}')
 
     # Prepare request parameters
     request_params = {
         'model': model_name,
+        'system': system_prompt,
         'messages': messages,
         'temperature': temperature,
         'max_tokens': max_tokens,
