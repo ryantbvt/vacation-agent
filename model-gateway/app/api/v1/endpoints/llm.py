@@ -34,6 +34,12 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
         model_name=request.model_name
     )
 
+    # Get the web search tool type for the model
+    web_search_tool_type = gateway_config.get_web_search_tool_type(
+        llm_models=llm_models,
+        model_name=request.model_name
+    )
+
     # Send request to model
     try:
         if vendor == "anthropic":
@@ -45,7 +51,8 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
                 max_tokens=request.max_tokens,
                 top_p=request.top_p,
                 top_k=request.top_k,
-                web_search=request.web_search
+                web_search=request.web_search,
+                web_search_tool_type=web_search_tool_type
             )
 
             return llm_response
@@ -59,7 +66,8 @@ async def llm_generate(request: GatewayRequest) -> LLMResponse:
                 max_tokens=request.max_tokens,
                 top_p=request.top_p,
                 top_k=request.top_k,
-                web_search=request.web_search
+                web_search=request.web_search,
+                web_search_tool_type=web_search_tool_type
             )
 
             return llm_response

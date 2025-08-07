@@ -11,18 +11,24 @@ llm_models:
   gpt-3.5-turbo:
     vendor: openai
     enabled: true
+    web_search_tool_type: web_search
   gpt-4o-mini:
     vendor: openai
     enabled: true
+    web_search_tool_type: web_search
   claude-3-5-sonnet-20240620:
     vendor: anthropic
     enabled: true
+    web_search_tool_type: web_search_20250305
   claude-3-5-sonnet-20241022:
     vendor: anthropic
     enabled: true
+    web_search_tool_type: web_search_20250305
   claude-3-5-haiku-20241022:
     vendor: anthropic
     enabled: true
+    web_search_tool_type: web_search_20250305
   claude-3-7-sonnet-20250219:
     vendor: anthropic
     enabled: true
+    web_search_tool_type: web_search_20250305

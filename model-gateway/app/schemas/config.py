@@ -11,6 +11,7 @@ logger = init_logger()
 class LLMModels(BaseModel):
     vendor: str
     enabled: bool
+    web_search_tool_type: Optional[str] = None
 
 class GatewayConfig(BaseModel):
     slm_models: Dict[str, str]
@@ -51,3 +52,34 @@ class GatewayConfig(BaseModel):
         except Exception as e:
             logger.error(f'An unexpected error occurred: {e}')
             raise
+    
+    @classmethod
+    def get_web_search_tool_type(cls, llm_models: Dict[str, LLMModels], model_name: str) -> Optional[str]:
+        '''
+        Description: Get the web search tool type for a specified model name
+
+        Args:
+            llm_models: dictionary of LLM models configuration
+            model_name: the model we want to find the web search tool type for
+
+        Return:
+            web_search_tool_type: the web search tool type for the model, or None if not configured
+        '''
+        logger.info(f'Fetching web search tool type for model {model_name}')
+        try:
+            model = llm_models.get(model_name)
+            if model is None:
+                logger.error(f'Model {model_name} not found in llm_models')
+                return None
+            
+            web_search_tool_type = model.web_search_tool_type
+            
+            logger.info(f'Web search tool type for model {model_name}: {web_search_tool_type}')
+            return web_search_tool_type
+        
+        except AttributeError as e:
+            logger.error(f'Error accessing web_search_tool_type attribute: {e}')
+            return None
+        except Exception as e:
+            logger.error(f'An unexpected error occurred: {e}')
+            return None

@@ -41,7 +41,8 @@ async def inference_anthropic(
     max_tokens: int,
     top_p: float = 1.0,
     top_k: int = 40,
-    web_search: bool = False
+    web_search: bool = False,
+    web_search_tool_type: str = None
 ) -> LLMResponse:
     '''
     Description: Inference handler for Anthropic models
@@ -89,20 +90,31 @@ async def inference_anthropic(
     }
 
     # Add web search tools if enabled
-    if web_search:
+    if web_search and web_search_tool_type:
         request_params['tools'] = [
             {
-                'type': 'web_search'
+                'type': web_search_tool_type,
+                'name': 'web_search',
+                'max_uses': 3
             }
         ]
-        logger.info(f'Web search enabled for Anthropic model: {model_name}')
+        logger.info(f'Web search enabled for Anthropic model: {model_name} with tool type: {web_search_tool_type}')
+    elif web_search and not web_search_tool_type:
+        logger.error(f'Web search requested for model {model_name} but no tool type configured')
+        raise ValueError(f'Web search requested for model {model_name} but no tool type configured')
 
     # Send Anthropic Request
     response_chat_completions = anthropic_client.messages.create(**request_params)
 
-    llm_response = LLMResponse(
-        response=response_chat_completions.content[0].text
-    )
+    # Debug logging for web search responses
+    if web_search and web_search_tool_type:
+        llm_response = LLMResponse(
+                response=response_chat_completions.content[-3].text
+            )
+    else: # when no web search is enabled
+        llm_response = LLMResponse(
+            response=response_chat_completions.content[0].text
+        )
 
     logger.info(f'Successful Anthropic Inference: {model_name}')
 
@@ -116,7 +128,8 @@ async def inference_openai(
     max_tokens: int,
     top_p: float = 1.0,
     top_k: int = 40,
-    web_search: bool = False
+    web_search: bool = False,
+    web_search_tool_type: str = None
 ) -> LLMResponse:
     '''
     Description: Inference handler for OpenAI models
@@ -161,13 +174,16 @@ async def inference_openai(
         'top_k': top_k
     }
 
-    if web_search:
+    if web_search and web_search_tool_type:
         request_params['tools'] = [
             {
-                'type': 'web_search'
+                'type': web_search_tool_type
             }
         ]
-        logger.info(f'Web search enabled for OpenAI model: {model_name}')
+        logger.info(f'Web search enabled for OpenAI model: {model_name} with tool type: {web_search_tool_type}')
+    elif web_search and not web_search_tool_type:
+        logger.warning(f'Web search requested for model {model_name} but no tool type configured')
+        raise ValueError(f'Web search requested for model {model_name} but no tool type configured')
 
     # send request to openai
     response_chat_completions = client.chat.completions.create(**request_params)
