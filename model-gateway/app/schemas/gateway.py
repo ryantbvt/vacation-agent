@@ -10,9 +10,9 @@ from typing import Optional, List
 class GatewayRequest(BaseModel):
     model_name: str
     user_prompt: str
-    system_prompt: str = "You are a helpful assistant."
+    system_prompt: str = "You are a helpful assistant. When web search is available, always use it to provide accurate and up-to-date information. Provide detailed, comprehensive responses with the information you find."
     temperature: Optional[float] = 0.0
-    max_tokens: Optional[int] = 4096
+    max_tokens: Optional[int] = 8192
     top_p: Optional[float] = 1.0
     top_k: Optional[int] = 40
     web_search: Optional[bool] = False
